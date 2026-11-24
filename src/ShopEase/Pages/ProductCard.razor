@@ -1,0 +1,37 @@
+@* Assignment 2: shows one product and raises OnAddToCart when "Add to Cart" is clicked.
+   Assignment 4: only logged-in users see the button; everyone else gets a link to log in. *@
+
+<article class="product-card">
+    <p class="product-card__category">@Product.Category</p>
+    <h2 class="product-card__name" id="@NameId">@Product.Name</h2>
+    <p class="product-card__price">@Product.FormattedPrice</p>
+
+    <AuthorizeView>
+        <Authorized>
+            @* aria-describedby lets screen readers say which product the button is for. *@
+            <button type="button" class="btn btn-primary product-card__button"
+                    aria-describedby="@NameId" @onclick="AddToCartAsync">
+                Add to Cart
+            </button>
+        </Authorized>
+        <NotAuthorized>
+            <a class="btn btn-secondary product-card__button" href="login" aria-describedby="@NameId">
+                Log in to add to cart
+            </a>
+        </NotAuthorized>
+    </AuthorizeView>
+</article>
+
+@code {
+    /// <summary>The product to show.</summary>
+    [Parameter, EditorRequired]
+    public Product Product { get; set; } = default!;
+
+    /// <summary>Raised with this product when the user clicks "Add to Cart".</summary>
+    [Parameter]
+    public EventCallback<Product> OnAddToCart { get; set; }
+
+    private string NameId => $"product-{Product.ProductID}-name";
+
+    private Task AddToCartAsync() => OnAddToCart.InvokeAsync(Product);
+}

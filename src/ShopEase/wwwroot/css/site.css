@@ -1,0 +1,564 @@
+/* ShopEase – site styles (Assignment 3)
+   Mobile first: the base rules are for phones; media queries add columns for
+   tablets (600px and wider) and desktops (1024px and wider).
+   All text and button colours have a contrast ratio of at least 4.5:1 (WCAG AA). */
+
+:root {
+    --color-text: #1f2933;        /* 14.7:1 on white */
+    --color-text-muted: #52606d;  /* 6.4:1 on white */
+    --color-bg: #f5f7fa;
+    --color-surface: #ffffff;
+    --color-border: #d3dae3;
+    --color-primary: #0b5cad;     /* white text on this: 6.7:1 */
+    --color-primary-dark: #084a8c;
+    --color-error: #b3261e;       /* 6.5:1 on white */
+    --color-success: #1e6b3a;     /* 6.6:1 on white */
+    --color-focus: #1f2933;
+
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(31, 41, 51, 0.06), 0 4px 12px rgba(31, 41, 51, 0.06);
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --content-width: 72rem;
+}
+
+/* ---------- Base ---------- */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    background: var(--color-bg);
+}
+
+h1,
+h2 {
+    line-height: 1.25;
+    margin: 0 0 var(--space-4);
+}
+
+h1 {
+    font-size: 1.75rem;
+}
+
+h2 {
+    font-size: 1.25rem;
+}
+
+p {
+    margin: 0 0 var(--space-4);
+}
+
+a {
+    color: var(--color-primary);
+    text-underline-offset: 0.15em;
+}
+
+a:hover {
+    color: var(--color-primary-dark);
+}
+
+/* A clear, thick outline on every element reached with the Tab key. */
+:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+/* The main area gets focus from the skip link; it doesn't need an outline. */
+main:focus {
+    outline: none;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Hidden until a keyboard user presses Tab on a new page. */
+.skip-link {
+    position: absolute;
+    left: var(--space-4);
+    top: -100px;
+    z-index: 100;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius);
+    font-weight: 600;
+}
+
+.skip-link:focus {
+    top: var(--space-2);
+}
+
+/* ---------- Header and footer ---------- */
+
+.site-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.site-header__inner {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+}
+
+.brand {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.site-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-4);
+}
+
+.site-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 44px;
+    color: var(--color-text);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.badge {
+    display: inline-block;
+    min-width: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: #ffffff;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.account {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+}
+
+.account__email {
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    overflow-wrap: anywhere;
+}
+
+.site-main {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4);
+}
+
+.site-footer {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px; /* large enough to tap on a phone */
+    padding: var(--space-2) var(--space-4);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+    color: #ffffff;
+}
+
+.btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-secondary:hover {
+    background: #e8f0fa;
+    color: var(--color-primary-dark);
+}
+
+.btn-link {
+    min-height: 44px;
+    padding: 0 var(--space-2);
+    background: none;
+    border: none;
+    color: var(--color-error);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btn-small {
+    min-height: 40px;
+    padding: var(--space-1) var(--space-3);
+    font-size: 0.9375rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* ---------- Product listing ---------- */
+
+.shop-layout {
+    display: grid;
+    gap: var(--space-6);
+}
+
+.notice {
+    padding: var(--space-3) var(--space-4);
+    background: #e8f0fa;
+    border-left: 4px solid var(--color-primary);
+    border-radius: var(--radius);
+}
+
+/* Phones: one product per row. */
+.product-grid {
+    list-style: none;
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+.product-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.product-card__category {
+    margin: 0 0 var(--space-1);
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.product-card__name {
+    margin: 0 0 var(--space-2);
+    font-size: 1.125rem;
+}
+
+.product-card__price {
+    margin: 0 0 var(--space-4);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Pushes the button to the bottom so buttons line up across a row. */
+.product-card__button {
+    margin-top: auto;
+    width: 100%;
+}
+
+/* ---------- Cart ---------- */
+
+.cart {
+    align-self: start;
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.cart__empty {
+    color: var(--color-text-muted);
+}
+
+.cart__list {
+    list-style: none;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+}
+
+.cart__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.cart__item-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.cart__item-name {
+    font-weight: 600;
+}
+
+.cart__item-meta {
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+}
+
+.cart__total {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+/* ---------- Forms ---------- */
+
+.add-product,
+.auth-card {
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.auth-card {
+    max-width: 28rem;
+    margin: 0 auto;
+}
+
+.auth-card__switch {
+    margin: var(--space-4) 0 0;
+}
+
+.form-grid {
+    display: grid;
+    gap: 0 var(--space-4);
+}
+
+.field {
+    margin-bottom: var(--space-4);
+}
+
+.field label {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-weight: 600;
+}
+
+.field input {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid #7b8794; /* 3.6:1 against white, so the box edge is visible */
+    border-radius: 8px;
+    font: inherit;
+    color: var(--color-text);
+    background: var(--color-surface);
+}
+
+.field input.invalid {
+    border-color: var(--color-error);
+    border-width: 2px;
+}
+
+.field__hint {
+    margin: var(--space-1) 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+.validation-message {
+    margin-top: var(--space-1);
+    color: var(--color-error);
+    font-size: 0.9375rem;
+}
+
+.form-error {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-error);
+    background: #fdecea;
+    border-left: 4px solid var(--color-error);
+    border-radius: var(--radius);
+}
+
+.form-error ul {
+    margin: 0;
+    padding-left: var(--space-4);
+}
+
+.form-message {
+    margin: var(--space-3) 0 0;
+    color: var(--color-success);
+    font-weight: 600;
+}
+
+/* ---------- Loading and error messages from Blazor ---------- */
+
+.app-loading {
+    padding: var(--space-6);
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+#blazor-error-ui {
+    display: none; /* Blazor shows it when something goes wrong */
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    padding: var(--space-3) var(--space-6) var(--space-3) var(--space-4);
+    background: #fff4ce;
+    color: var(--color-text);
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.2);
+}
+
+#blazor-error-ui .dismiss {
+    position: absolute;
+    right: var(--space-3);
+    top: var(--space-2);
+    min-width: 44px;
+    min-height: 44px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* ---------- Tablet: 600px and wider ---------- */
+
+@media (min-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .account {
+        width: auto;
+        margin-left: auto;
+    }
+
+    .site-main {
+        padding: var(--space-6) var(--space-5);
+    }
+}
+
+/* ---------- Desktop: 1024px and wider ---------- */
+
+@media (min-width: 1024px) {
+    /* Products on the left, cart on the right. */
+    .shop-layout {
+        grid-template-columns: minmax(0, 1fr) 20rem;
+        align-items: start;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .form-grid {
+        grid-template-columns: 2fr 1.5fr 1fr;
+    }
+
+    /* The cart stays visible while scrolling through products. */
+    .cart {
+        position: sticky;
+        top: var(--space-4);
+    }
+}
+
+/* People who turn off animations in their system settings get no transitions. */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Windows High Contrast mode: keep buttons and focus outlines visible. */
+@media (forced-colors: active) {
+    .btn {
+        border: 2px solid ButtonText;
+    }
+
+    :focus-visible {
+        outline-color: Highlight;
+    }
+}

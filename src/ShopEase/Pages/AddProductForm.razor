@@ -1,0 +1,58 @@
+@* Assignment 4, Step 1: a form whose text inputs are validated and sanitized.
+   - DataAnnotationsValidator checks the rules in ShopEase.Core/ProductInput.cs.
+   - ProductInput.ToProduct cleans the text again with InputSanitizer.
+   - Blazor HTML-encodes the product name when it's shown, so it can't run as a script (XSS). *@
+@inject ProductCatalog Catalog
+
+<section class="add-product" aria-labelledby="add-product-heading">
+    <h2 id="add-product-heading">Add a product</h2>
+
+    <EditForm Model="_input" OnValidSubmit="Submit" FormName="add-product">
+        <DataAnnotationsValidator />
+
+        <div class="form-grid">
+            <div class="field">
+                <label for="product-name">Name</label>
+                <InputText id="product-name" @bind-Value="_input.Name"
+                           maxlength="@ProductInput.NameMaxLength" autocomplete="off" />
+                <ValidationMessage For="() => _input.Name" />
+            </div>
+
+            <div class="field">
+                <label for="product-category">Category</label>
+                <InputText id="product-category" @bind-Value="_input.Category"
+                           maxlength="@ProductInput.CategoryMaxLength" autocomplete="off" />
+                <ValidationMessage For="() => _input.Category" />
+            </div>
+
+            <div class="field">
+                <label for="product-price">Price (USD)</label>
+                <InputNumber id="product-price" @bind-Value="_input.Price" min="0.01" max="100000" step="0.01" />
+                <ValidationMessage For="() => _input.Price" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add product</button>
+    </EditForm>
+
+    <p class="form-message" role="status">@_message</p>
+</section>
+
+@code {
+    private ProductInput _input = new();
+    private string _message = string.Empty;
+
+    private void Submit()
+    {
+        try
+        {
+            var product = Catalog.Add(_input);
+            _message = $"{product.Name} was added to the shop.";
+            _input = new ProductInput();
+        }
+        catch (System.ComponentModel.DataAnnotations.ValidationException ex)
+        {
+            _message = ex.Message;
+        }
+    }
+}

@@ -1,0 +1,66 @@
+@* Assignment 2: the cart component. It listens to Cart.CartChanged, so it updates
+   as soon as a ProductCard sends a product to the cart. *@
+@implements IDisposable
+@inject Cart Cart
+
+<aside id="cart" class="cart" aria-labelledby="cart-heading" tabindex="-1">
+    <h2 id="cart-heading">Your cart</h2>
+
+    @if (Cart.Count == 0)
+    {
+        <p class="cart__empty">Your cart is empty.</p>
+    }
+    else
+    {
+        <ul class="cart__list">
+            @foreach (var line in Lines)
+            {
+                <li class="cart__item" @key="line.Product.ProductID">
+                    <div class="cart__item-text">
+                        <span class="cart__item-name">@line.Product.Name</span>
+                        <span class="cart__item-meta">@line.Quantity × @line.Product.FormattedPrice</span>
+                    </div>
+                    <button type="button" class="btn btn-link"
+                            aria-label="@($"Remove {line.Product.Name} from cart")"
+                            @onclick="() => Remove(line.Product)">
+                        Remove
+                    </button>
+                </li>
+            }
+        </ul>
+
+        <p class="cart__total">
+            <span>Total</span>
+            <strong>@Cart.FormattedTotal</strong>
+        </p>
+    }
+
+    @* Screen readers announce changes in this area without the user moving focus. *@
+    <p class="visually-hidden" role="status" aria-live="polite">@_announcement</p>
+</aside>
+
+@code {
+    private string _announcement = string.Empty;
+
+    // Groups identical products into one line with a quantity.
+    private IEnumerable<(Product Product, int Quantity)> Lines =>
+        Cart.Products
+            .GroupBy(p => p.ProductID)
+            .Select(group => (group.First(), group.Count()));
+
+    protected override void OnInitialized() => Cart.CartChanged += OnCartChanged;
+
+    private void Remove(Product product)
+    {
+        Cart.RemoveProduct(product.ProductID);
+        _announcement = $"{product.Name} removed. {Cart.Count} items, total {Cart.FormattedTotal}.";
+    }
+
+    private void OnCartChanged()
+    {
+        _announcement = $"Cart updated: {Cart.Count} items, total {Cart.FormattedTotal}.";
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => Cart.CartChanged -= OnCartChanged;
+}

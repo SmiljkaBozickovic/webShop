@@ -1,0 +1,83 @@
+@page "/register"
+@inject IAccountService Account
+@inject NavigationManager Navigation
+
+<PageTitle>Create an account – ShopEase</PageTitle>
+
+<section class="auth-card" aria-labelledby="register-heading">
+    <h1 id="register-heading">Create an account</h1>
+
+    <EditForm Model="_model" OnValidSubmit="SubmitAsync" FormName="register">
+        <DataAnnotationsValidator />
+
+        <div class="field">
+            <label for="register-email">Email</label>
+            <InputText id="register-email" type="email" @bind-Value="_model.Email" autocomplete="username" />
+            <ValidationMessage For="() => _model.Email" />
+        </div>
+
+        <div class="field">
+            <label for="register-password">Password</label>
+            <InputText id="register-password" type="password" @bind-Value="_model.Password"
+                       autocomplete="new-password" aria-describedby="password-hint" />
+            <p id="password-hint" class="field__hint">
+                At least 8 characters, with an uppercase letter, a lowercase letter, a number and a symbol.
+            </p>
+            <ValidationMessage For="() => _model.Password" />
+        </div>
+
+        <div class="field">
+            <label for="register-confirm">Confirm password</label>
+            <InputText id="register-confirm" type="password" @bind-Value="_model.ConfirmPassword" autocomplete="new-password" />
+            <ValidationMessage For="() => _model.ConfirmPassword" />
+        </div>
+
+        @if (_errors.Count > 0)
+        {
+            <div class="form-error" role="alert">
+                <ul>
+                    @foreach (var error in _errors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <button type="submit" class="btn btn-primary btn-block" disabled="@_busy">
+            @(_busy ? "Creating account…" : "Create account")
+        </button>
+    </EditForm>
+
+    <p class="auth-card__switch">Already have an account? <a href="login">Log in</a></p>
+</section>
+
+@code {
+    private readonly RegisterModel _model = new();
+    private IReadOnlyList<string> _errors = [];
+    private bool _busy;
+
+    private async Task SubmitAsync()
+    {
+        _busy = true;
+        _errors = [];
+
+        var email = _model.Email.Trim();
+        var result = await Account.RegisterAsync(email, _model.Password);
+        if (result.Succeeded)
+        {
+            // Log the new user straight in.
+            result = await Account.LoginAsync(email, _model.Password);
+        }
+
+        _busy = false;
+        if (result.Succeeded)
+        {
+            Navigation.NavigateTo("");
+        }
+        else
+        {
+            _errors = result.Errors;
+        }
+    }
+}

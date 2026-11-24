@@ -1,0 +1,64 @@
+﻿@page "/"
+@implements IDisposable
+@inject Cart Cart
+@inject ProductCatalog Catalog
+@inject NavigationManager Navigation
+
+<PageTitle>Products – ShopEase</PageTitle>
+
+<div class="shop-layout">
+    <section class="products" aria-labelledby="products-heading">
+        <h1 id="products-heading">Products</h1>
+
+        <AuthorizeView>
+            <NotAuthorized>
+                <p class="notice">
+                    <a href="login">Log in</a> or <a href="register">create an account</a> to add products to your cart.
+                </p>
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <ul class="product-grid">
+            @foreach (var product in Catalog.Products)
+            {
+                <li @key="product.ProductID">
+                    <ProductCard Product="product" OnAddToCart="HandleAddToCartAsync" />
+                </li>
+            }
+        </ul>
+
+        <AuthorizeView>
+            <Authorized>
+                <AddProductForm />
+            </Authorized>
+        </AuthorizeView>
+    </section>
+
+    <CartView />
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationState { get; set; } = default!;
+
+    protected override void OnInitialized() => Catalog.CatalogChanged += OnCatalogChanged;
+
+    // Assignment 2: ProductCard raises OnAddToCart; this method sends the product to the cart.
+    private async Task HandleAddToCartAsync(Product product)
+    {
+        // Assignment 4: check again here, not only by hiding the button,
+        // so only logged-in users can add products to the cart.
+        var state = await AuthenticationState;
+        if (state.User.Identity?.IsAuthenticated != true)
+        {
+            Navigation.NavigateTo("login");
+            return;
+        }
+
+        Cart.AddProduct(product);
+    }
+
+    private void OnCatalogChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Catalog.CatalogChanged -= OnCatalogChanged;
+}

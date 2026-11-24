@@ -1,0 +1,71 @@
+@page "/login"
+@inject IAccountService Account
+@inject NavigationManager Navigation
+
+<PageTitle>Log in – ShopEase</PageTitle>
+
+<section class="auth-card" aria-labelledby="login-heading">
+    <h1 id="login-heading">Log in</h1>
+
+    <EditForm Model="_model" OnValidSubmit="SubmitAsync" FormName="login">
+        <DataAnnotationsValidator />
+
+        <div class="field">
+            <label for="login-email">Email</label>
+            <InputText id="login-email" type="email" @bind-Value="_model.Email" autocomplete="username" />
+            <ValidationMessage For="() => _model.Email" />
+        </div>
+
+        <div class="field">
+            <label for="login-password">Password</label>
+            <InputText id="login-password" type="password" @bind-Value="_model.Password" autocomplete="current-password" />
+            <ValidationMessage For="() => _model.Password" />
+        </div>
+
+        @if (_error is not null)
+        {
+            <p class="form-error" role="alert">@_error</p>
+        }
+
+        <button type="submit" class="btn btn-primary btn-block" disabled="@_busy">
+            @(_busy ? "Logging in…" : "Log in")
+        </button>
+    </EditForm>
+
+    <p class="auth-card__switch">No account yet? <a href="register">Create one</a></p>
+</section>
+
+@code {
+    private readonly LoginModel _model = new();
+    private string? _error;
+    private bool _busy;
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    private async Task SubmitAsync()
+    {
+        _busy = true;
+        _error = null;
+
+        var result = await Account.LoginAsync(_model.Email.Trim(), _model.Password);
+
+        _busy = false;
+        if (result.Succeeded)
+        {
+            Navigation.NavigateTo(SafeReturnUrl(ReturnUrl));
+        }
+        else
+        {
+            _error = string.Join(" ", result.Errors);
+            _model.Password = string.Empty;
+        }
+    }
+
+    // Only go back to pages on this site. Otherwise a link like
+    // /login?returnUrl=https://evil.example could send users to another website after login.
+    private static string SafeReturnUrl(string? url) =>
+        !string.IsNullOrEmpty(url) && url.StartsWith('/') && !url.StartsWith("//") && !url.StartsWith("/\\")
+            ? url
+            : "/";
+}

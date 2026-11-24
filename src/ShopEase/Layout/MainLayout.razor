@@ -1,0 +1,75 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject Cart Cart
+@inject IAccountService Account
+@inject NavigationManager Navigation
+
+@* Lets keyboard users jump past the header straight to the page content. *@
+<a class="skip-link" href="@SkipLinkHref">Skip to main content</a>
+
+<header class="site-header">
+    <div class="site-header__inner">
+        <a class="brand" href="">ShopEase</a>
+
+        <nav class="site-nav" aria-label="Main">
+            <ul>
+                <li><NavLink href="" Match="NavLinkMatch.All">Products</NavLink></li>
+                <li>
+                    <a href="#cart">
+                        Cart <span class="badge">@Cart.Count</span><span class="visually-hidden"> items</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="account">
+            <AuthorizeView>
+                <Authorized>
+                    <span class="account__email">@context.User.Identity?.Name</span>
+                    <button type="button" class="btn btn-secondary btn-small" @onclick="LogoutAsync">Log out</button>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink class="btn btn-secondary btn-small" href="login">Log in</NavLink>
+                    <NavLink class="btn btn-primary btn-small" href="register">Register</NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+</header>
+
+<main id="main-content" class="site-main" tabindex="-1">
+    @Body
+</main>
+
+<footer class="site-footer">
+    <p>ShopEase – a Blazor WebAssembly course project.</p>
+</footer>
+
+@code {
+    // The page has <base href="/">, so a plain "#main-content" link would jump to the home page.
+    // Using the full address of the current page keeps the user where they are.
+    private string SkipLinkHref => $"{Navigation.Uri.Split('#')[0]}#main-content";
+
+    protected override void OnInitialized()
+    {
+        Cart.CartChanged += OnStateChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private async Task LogoutAsync()
+    {
+        await Account.LogoutAsync();
+        Cart.Clear();
+        Navigation.NavigateTo("");
+    }
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Cart.CartChanged -= OnStateChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}
